@@ -32,6 +32,9 @@ class SubWindow:
          
     def get_tweets_containing_segment(self,segment):
         return self.segments[segment].tweets
+
+    def get_tweet_ids_containing_segment(self,segment):
+        return self.segments[segment].tweet_ids
     
     def get_freq_of_segment(self, segment):
         return self.segments[segment].freq
@@ -77,6 +80,14 @@ class TimeWindow:
             if not segment == None:
                 tweets += segment.tweets
         return tweets
+
+    def get_tweet_ids_containing_segment(self, seg_name):
+        tweet_ids = []
+        for sw in self.subwindows:
+            segment = sw.segments.get(seg_name,None)
+            if not segment == None:
+                tweet_ids += segment.tweet_ids
+        return tweet_ids
         
     def advance_window(self, next_subwindow):
         print('Advancing Time Window')

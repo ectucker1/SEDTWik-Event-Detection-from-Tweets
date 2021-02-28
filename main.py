@@ -56,21 +56,34 @@ seg_sim = get_seg_similarity(bursty_segment_weights, tw)
 # Clustering Bursty Segments
 events = get_events(bursty_segment_weights, segment_newsworthiness, seg_sim, n_neighbors)
 
-# dump event clusters along with tweets[cleaned ones :-( ] associated with the segments in the cluster 
+# dump event clusters along with tweet ids associated with the segments in the cluster
 print('\nEvents will be saved in', event_output_dir)
+event_tweet_ids = set() # Storage for tweets found in any event
 if not os.path.exists(event_output_dir):
     os.makedirs(event_output_dir)
 event_no = 0
 for e, event_worthiness in events:
     event_no += 1
-    print('\nEVENT:', event_no, 'News Worthiness:', event_worthiness) 
+    print('\nEVENT:', event_no, 'News Worthiness:', event_worthiness)
     f = open(event_output_dir + str(event_no) + '.txt', 'w')
     f.write(str(e)+' '+str(event_worthiness)+'\n\n')
     for seg_name in e:
-        print(seg_name) 
+        print(seg_name)
         f.write('SEGMENT:' + seg_name+'\n')
-        for text in set(tw.get_tweets_containing_segment(seg_name)):
-            f.write(text+'\n')
+        for tweet_id in set(tw.get_tweet_ids_containing_segment(seg_name)):
+            event_tweet_ids.add(tweet_id)
+            f.write(tweet_id+'\n')
         f.write('-----------------------------------------------------------\n')
     f.close()
 
+print('\nGathering tweets not in events')
+non_event_tweet_ids = set()
+for subwindow in subwindows:
+    for segment in subwindow.segments:
+        for tweet_id in tw.get_tweet_ids_containing_segment(segment):
+            if tweet_id not in event_tweet_ids:
+                non_event_tweet_ids.add(tweet_id)
+f = open(event_output_dir + 'nonevent.txt', 'w')
+for tweet_id in non_event_tweet_ids:
+    f.write(tweet_id + '\n')
+f.close()

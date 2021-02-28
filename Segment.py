@@ -5,6 +5,7 @@ class Segment:
         """
         self.segment = segment
         self.tweets = [] # list of tweets( text:str ) containing this segment in current time window
+        self.tweet_ids = [] # list of tweet ids ( id:str) containing this segment
         
         self.freq = 0 # tweet-freq i.e. number of tweets containing this segment
         self.user_set = set() # no. of unique users that used this segment in current time window
@@ -15,8 +16,9 @@ class Segment:
     def __str__(self):
         return 'Segment:'+self.segment+', freq:'+str(self.freq)+', user_count:'+str(self.get_user_count())    
         
-    def add_tweet(self, user_id, text, retweet_count, followers_count):    
+    def add_tweet(self, user_id, tweet_id, text, retweet_count, followers_count):
         self.tweets.append(text)
+        self.tweet_ids.append(tweet_id)
         self.user_set.add(user_id)
         self.freq += 1
         self.retweet_count += retweet_count
